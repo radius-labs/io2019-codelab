@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import Account from "./container/Account/Account";
 
 function App() {
