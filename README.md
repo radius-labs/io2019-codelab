@@ -22,6 +22,8 @@ We will be using eosjs-api to fetch and display account data from the blockchain
 
 The frontend javascript library we will use is React js.
 
+Slides can be found [here](https://github.com/radius-labs/io2019-codelab/tree/master/assets)
+
 <p  align="left">
   <img src="./assets/io2019.gif" />
 </p>
