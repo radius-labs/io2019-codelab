@@ -1,68 +1,335 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1>Table of Contents<h1>
 
-## Available Scripts
+- [Google io2019 Extended Codelab](#google-io2019-extended-codelab)
+- [Getting Started](#getting-started)
+  - [Step 1](#step-1)
+  - [Step 2](#step-2)
+  - [Step 3](#step-3)
+  - [Step 4](#step-4)
+  - [Step 5](#step-5)
+  - [Step 6](#step-6)
+  - [Step 7](#step-7)
+- [Contributing](#contributing)
+- [Authors](#authors)
+- [License](#license)
+- [References](#references)
 
-In the project directory, you can run:
+## Google io2019 Extended Codelab
 
-### `npm start`
+Code lab on deploying your blockchain application to firebase hosting.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+We will be using eosjs-api to fetch and display account data from the blockchain. The user interface library we will be using is semantic-ui-react.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+The frontend javascript library we will use is React js.
 
-### `npm test`
+<p  align="left">
+  <img src="./assets/io2019.gif" />
+</p>
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Getting Started
 
-### `npm run build`
+These instructions will get you a copy of the project up and running on your local machine.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Step 1
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Install the firebase cli. Ensure that you have npm running.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm install -g firebase-tools
+```
 
-### `npm run eject`
+Log in to your firebase account by typing in
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+firebase login
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Quick check to see all your authentication worked
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+firebase list
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Step 2
 
-## Learn More
+Create a new project folder
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+mkdir io
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Initialize a new firebase project
 
-### Code Splitting
+```bash
+firebase init
+```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+During the prompts
 
-### Analyzing the Bundle Size
+- Select hosting
+- Use build as your public root library
+- Configure as a single page application
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+Once initialization has been done, go to https://console.firebase.google.com and create a new project. With that you can now associate your folder with the project created on the firebase console.
 
-### Making a Progressive Web App
+```bash
+firebase use --add
+```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+### Step 3
 
-### Advanced Configuration
+Let's create our react application
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+```bash
+create-react-app io
+```
 
-### Deployment
+And add the following node modules
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+```bash
+yarn add eosjs-api
+yarn add semantic-ui-react
+yarn add semantic-ui-css
+```
 
-### `npm run build` fails to minify
+and run
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+```bash
+yarn start
+```
+
+### Step 4
+
+Let's test to see if our deployment will work. We will run yarn build to build our project.
+
+```bash
+yarn build
+```
+
+Then run firebase deploy to deploy our default app
+
+```bash
+firebase deploy
+```
+
+### Step 5
+
+In our index.js we add our styling for semantic ui
+
+```js
+import "semantic-ui-css/semantic.min.css";
+```
+
+and in our index.css we add
+
+```css
+html,
+body > div,
+body > div > div {
+  height: 100vh;
+}
+```
+
+To ensure our height is 100
+
+### Step 6
+
+Remove App.css since we will not need it
+
+Add the following code to our App.js file to display the accounts component
+
+```js
+import React from "react";
+import Account from "./container/Account/Account";
+
+function App() {
+  return (
+    <div className="App">
+      <Account />
+    </div>
+  );
+}
+
+export default App;
+```
+
+Create a folder for the account component and create an account.js file
+
+```
+--src
+----account
+------account.js
+
+```
+
+### Step 7
+
+Render the account component
+
+```
+import React, { Component } from "react";
+import { Form, TextArea, Input, Grid, Button } from "semantic-ui-react";
+import EosApi from "eosjs-api";
+
+const endpoint = "https://api.eosnewyork.io";
+
+class Account extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      account: "",
+      info: "",
+      balance: ""
+    };
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+  onSubmit(e) {
+    e.preventDefault();
+    let account = this.state.account;
+    let options = {
+      httpEndpoint: endpoint,
+      verbose: false
+    };
+    let eos = EosApi(options);
+    eos
+      .getAccount(account)
+      .then(result =>
+        this.setState({ info: result, balance: result.core_liquid_balance })
+      );
+  }
+  render() {
+    return (
+      <Grid style={{ height: "100vh" }} verticalAlign="middle" centered>
+        <Grid.Column style={{ width: "100vh" }}>
+          <Form className="Form" size="large">
+            <Form.Field
+              control={Input}
+              label="Account name"
+              name="account"
+              placeholder="Account name"
+              value={this.state.account}
+              onChange={this.onChange}
+            />
+            <Form.Field
+              control={TextArea}
+              label="Account Balance"
+              name="balance"
+              placeholder="Account Balance"
+              value={this.state.balance}
+              onChange={this.onChange}
+            />
+            <Form.Field
+              control={TextArea}
+              placeholder="Account information"
+              style={{ height: "50vh" }}
+              value={JSON.stringify(this.state.info)}
+            />
+          </Form>
+          <br />
+          <Button type="submit" onClick={this.onSubmit}>
+            Submit
+          </Button>
+        </Grid.Column>
+      </Grid>
+    );
+  }
+}import React, { Component } from "react";
+import { Form, TextArea, Input, Grid, Button } from "semantic-ui-react";
+import EosApi from "eosjs-api";
+
+const endpoint = "https://api.eosnewyork.io";
+
+class Account extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      account: "",
+      info: "",
+      balance: ""
+    };
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+  onSubmit(e) {
+    e.preventDefault();
+    let account = this.state.account;
+    let options = {
+      httpEndpoint: endpoint,
+      verbose: false
+    };
+    let eos = EosApi(options);
+    eos
+      .getAccount(account)
+      .then(result =>
+        this.setState({ info: result, balance: result.core_liquid_balance })
+      );
+  }
+  render() {
+    return (
+      <Grid style={{ height: "100vh" }} verticalAlign="middle" centered>
+        <Grid.Column style={{ width: "100vh" }}>
+          <Form className="Form" size="large">
+            <Form.Field
+              control={Input}
+              label="Account name"
+              name="account"
+              placeholder="Account name"
+              value={this.state.account}
+              onChange={this.onChange}
+            />
+            <Form.Field
+              control={TextArea}
+              label="Account Balance"
+              name="balance"
+              placeholder="Account Balance"
+              value={this.state.balance}
+              onChange={this.onChange}
+            />
+            <Form.Field
+              control={TextArea}
+              placeholder="Account information"
+              style={{ height: "50vh" }}
+              value={JSON.stringify(this.state.info)}
+            />
+          </Form>
+          <br />
+          <Button type="submit" onClick={this.onSubmit}>
+            Submit
+          </Button>
+        </Grid.Column>
+      </Grid>
+    );
+  }
+}
+
+export default Account;
+
+
+export default Account;
+```
+
+## Contributing
+
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Authors
+
+**Peter Okwara** https://github.com/peterokwara
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## References
+
+- Firebase https://firebase.google.com/
+- Getting started with firebase hosting https://firebase.google.com/docs/hosting/quickstart
+- Eosjs-api https://github.com/EOSIO/eosjs-api
+- Semantic-ui-react https://react.semantic-ui.com/
