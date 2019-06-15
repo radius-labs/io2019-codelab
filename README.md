@@ -1,4 +1,4 @@
-<h1>Table of Contents<h1>
+<h1>Table of Contents</h1>
 
 - [Google io2019 Extended Codelab](#google-io2019-extended-codelab)
 - [Getting Started](#getting-started)
